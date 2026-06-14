@@ -1,0 +1,272 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 68px;
+  border-bottom: 0.5px solid var(--border-subtle);
+  background: var(--bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(16px);
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo span { color: var(--accent); }
+
+/* ── Desktop actions ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+/* Ghost button — subtle, no border by default */
+.btnGhost {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
+.btnGhost:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+/* Primary button — solid accent */
+.btnPrimary {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  padding: 9px 20px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+  box-shadow: 0 2px 8px rgba(232, 93, 38, 0.3);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 16px rgba(232, 93, 38, 0.4);
+  transform: translateY(-1px);
+}
+
+.btnPrimary:active { transform: translateY(0); }
+
+/* Outline button — for "List your car" */
+.btnOutline {
+  background: transparent;
+  border: 1.5px solid var(--border-default);
+  color: var(--text-primary);
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+
+.btnOutline:hover {
+  border-color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+/* Role badge */
+.roleBadge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--accent-subtle);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+
+/* Divider between nav sections */
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-subtle);
+  margin: 0 4px;
+}
+
+/* Theme toggle */
+.themeToggle {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.themeToggle:hover {
+  border-color: var(--border-default);
+  background: var(--bg-surface);
+  transform: scale(1.05);
+}
+
+/* ── Mobile ── */
+.mobileRight {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.hamburger {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.hamburger:hover {
+  border-color: var(--border-default);
+}
+
+.mobileMenu {
+  position: absolute;
+  top: 68px;
+  left: 0;
+  right: 0;
+  background: var(--bg-surface);
+  border-bottom: 0.5px solid var(--border-subtle);
+  padding: 12px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 99;
+  animation: slideDown 0.2s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mobileUser {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  margin-bottom: 4px;
+  border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.mobileUserName {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.mobileLink {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  display: block;
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+
+.mobileLink:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.mobileSignOut {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 11px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-top: 10px;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.mobileSignOut:hover {
+  border-color: #f07070;
+  color: #f07070;
+  background: rgba(240, 112, 112, 0.05);
+}
+
+.mobilePrimary {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  margin-top: 8px;
+  font-family: var(--font-body);
+  transition: background 0.2s;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(232, 93, 38, 0.3);
+}
+
+.mobilePrimary:hover { background: var(--accent-hover); }
+
+@media (max-width: 768px) {
+  .actions     { display: none; }
+  .mobileRight { display: flex; }
+  .nav         { position: relative; padding: 0 20px; }
+}

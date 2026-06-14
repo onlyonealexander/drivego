@@ -1,0 +1,323 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 8, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal {
+  background: var(--bg-surface);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  padding: 32px;
+  position: relative;
+  animation: slideUp 0.2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px 8px;
+}
+
+.close:hover { color: var(--text-primary); }
+
+/* Car info */
+.carInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.carEmoji {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.carImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.carName {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.carMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.carPrice {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.carPrice span {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--border-subtle);
+  margin: 16px 0;
+}
+
+/* Dates */
+.dates {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.dateField {
+  flex: 1;
+}
+
+.dateArrow {
+  color: var(--text-muted);
+  font-size: 18px;
+  padding-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.datePicker {
+  width: 100%;
+  background: var(--bg-input);
+  border: 0.5px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.datePicker:focus { border-color: rgba(232, 93, 38, 0.5); }
+.datePicker:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Style the datepicker popup */
+:global(.react-datepicker) {
+  background: #1a1a24 !important;
+  border: 0.5px solid rgba(255,255,255,0.12) !important;
+  font-family: var(--font-body) !important;
+  border-radius: 10px !important;
+}
+
+:global(.react-datepicker__header) {
+  background: #13131a !important;
+  border-bottom: 0.5px solid rgba(255,255,255,0.07) !important;
+}
+
+:global(.react-datepicker__current-month),
+:global(.react-datepicker__day-name) {
+  color: #f0ede8 !important;
+}
+
+:global(.react-datepicker__day) {
+  color: #f0ede8 !important;
+  border-radius: 6px !important;
+}
+
+:global(.react-datepicker__day:hover) {
+  background: rgba(232, 93, 38, 0.2) !important;
+}
+
+:global(.react-datepicker__day--selected),
+:global(.react-datepicker__day--range-start),
+:global(.react-datepicker__day--range-end) {
+  background: #e85d26 !important;
+  color: #fff !important;
+}
+
+:global(.react-datepicker__day--in-range) {
+  background: rgba(232, 93, 38, 0.15) !important;
+}
+
+:global(.react-datepicker__day--disabled) {
+  color: rgba(240,237,232,0.2) !important;
+}
+
+:global(.react-datepicker__navigation-icon::before) {
+  border-color: #f0ede8 !important;
+}
+
+/* Price breakdown */
+.breakdown {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.breakdownRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.totalRow {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 0;
+}
+
+/* Actions */
+.confirmBtn {
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  padding: 13px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 12px;
+}
+
+.confirmBtn:hover:not(:disabled) { background: var(--accent-hover); }
+.confirmBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+}
+
+.note {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.error {
+  background: rgba(220, 50, 50, 0.1);
+  border: 0.5px solid rgba(220, 50, 50, 0.25);
+  border-radius: var(--radius-md);
+  padding: 9px 12px;
+  font-size: 12px;
+  color: #f07070;
+  margin-bottom: 14px;
+}
+
+/* Success */
+.success {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.successIcon { font-size: 48px; margin-bottom: 16px; }
+
+.successTitle {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.successSub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.successDetails {
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--text-secondary);
+}
+
+.detailRow:last-child { margin-bottom: 0; }
+
+.doneBtn {
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.doneBtn:hover { background: var(--accent-hover); }
+
+.paystackBadge {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
