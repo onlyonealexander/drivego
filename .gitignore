@@ -16,3 +16,5 @@ yarn-debug.log*
 # Editor
 .vscode/
 .DS_Store
+.vercel
+.env*

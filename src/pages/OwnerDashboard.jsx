@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getOwnerCars, addCar, deleteCar, updateCar, getOwnerBookings, updateBookingStatus } from '../lib/db';
+import { getOwnerCars, addCar, deleteCar, updateCar, getOwnerBookings, updateBookingStatus, getProfile, updateProfile } from '../lib/db';
 import { uploadCarImage } from '../lib/storage';
 import styles from './OwnerDashboard.module.css';
 
@@ -19,10 +19,15 @@ export default function OwnerDashboard() {
 
   const [form, setForm] = useState({
     name: '', brand: '', type: 'Sedan', year: '',
-    price: '', city: '', description: '', image_url: ''
+    price: '', city: '', description: '', image_url: '', requirements: ''
   });
 
-  useEffect(() => { if (user) loadData(); }, [user]);
+  const [showPayout, setShowPayout]   = useState(false);
+  const [payoutForm, setPayoutForm]   = useState({ bank_name: '', account_number: '', account_name: '' });
+  const [payoutSaving, setPayoutSaving] = useState(false);
+  const [payoutMsg, setPayoutMsg]     = useState('');
+
+  useEffect(() => { if (user) { loadData(); loadPayout(); } }, [user]);
 
   const loadData = async () => {
     setLoadingData(true);
@@ -37,6 +42,34 @@ export default function OwnerDashboard() {
       setError('Failed to load data.');
     } finally {
       setLoadingData(false);
+    }
+  };
+
+  const loadPayout = async () => {
+    try {
+      const profile = await getProfile(user.id);
+      setPayoutForm({
+        bank_name:      profile.bank_name      || '',
+        account_number: profile.account_number || '',
+        account_name:   profile.account_name   || '',
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSavePayout = async (e) => {
+    e.preventDefault();
+    setPayoutSaving(true);
+    setPayoutMsg('');
+    try {
+      await updateProfile(user.id, payoutForm);
+      setPayoutMsg('Payout details saved.');
+      setTimeout(() => setPayoutMsg(''), 3000);
+    } catch (err) {
+      setPayoutMsg('Failed to save payout details.');
+    } finally {
+      setPayoutSaving(false);
     }
   };
 
@@ -80,7 +113,7 @@ export default function OwnerDashboard() {
       });
       setSuccessMsg('Car listed successfully!');
       setShowUpload(false);
-      setForm({ name: '', brand: '', type: 'Sedan', year: '', price: '', city: '', description: '', image_url: '' });
+      setForm({ name: '', brand: '', type: 'Sedan', year: '', price: '', city: '', description: '', image_url: '', requirements: '' });
       setImageFile(null);
       setImagePreview('');
       loadData();
@@ -122,7 +155,7 @@ export default function OwnerDashboard() {
   };
 
   const activeBookings = bookings.filter(
-    (b) => b.status === 'pending' || b.status === 'confirmed'
+    (b) => ['pending', 'confirmed', 'dispatched', 'delivered'].includes(b.status)
   );
 
   const earnings = bookings
@@ -164,6 +197,72 @@ export default function OwnerDashboard() {
           <div className={styles.statValue}>{activeBookings.length}</div>
         </div>
       </div>
+
+      {/* ── PAYOUT DETAILS ── */}
+      <section className={styles.section}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2 className={styles.sectionTitle}>Payout details</h2>
+          <button
+            type="button"
+            className={styles.addCard}
+            style={{ padding: '6px 14px', minHeight: 'auto' }}
+            onClick={() => setShowPayout(!showPayout)}
+          >
+            {showPayout ? 'Hide' : payoutForm.account_number ? 'Edit' : 'Add bank details'}
+          </button>
+        </div>
+
+        {!showPayout && payoutForm.account_number && (
+          <p className={styles.empty}>
+            {payoutForm.bank_name} · {payoutForm.account_name} · {payoutForm.account_number}
+          </p>
+        )}
+        {!showPayout && !payoutForm.account_number && (
+          <p className={styles.empty}>
+            Add your bank account so renters and support know where your earnings are paid.
+          </p>
+        )}
+
+        {showPayout && (
+          <form className={styles.uploadForm} onSubmit={handleSavePayout}>
+            <div className={styles.formGrid}>
+              <div className={styles.field}>
+                <label className={styles.label}>Bank name</label>
+                <input
+                  className={styles.input}
+                  placeholder="e.g. GTBank"
+                  value={payoutForm.bank_name}
+                  onChange={(e) => setPayoutForm({ ...payoutForm, bank_name: e.target.value })}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>Account number</label>
+                <input
+                  className={styles.input}
+                  placeholder="0123456789"
+                  value={payoutForm.account_number}
+                  onChange={(e) => setPayoutForm({ ...payoutForm, account_number: e.target.value })}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>Account name</label>
+                <input
+                  className={styles.input}
+                  placeholder="As it appears on your bank account"
+                  value={payoutForm.account_name}
+                  onChange={(e) => setPayoutForm({ ...payoutForm, account_name: e.target.value })}
+                />
+              </div>
+            </div>
+            {payoutMsg && <p style={{ fontSize: 13, color: 'var(--accent)', marginBottom: 12 }}>{payoutMsg}</p>}
+            <div className={styles.formActions}>
+              <button type="submit" className={styles.submitBtn} disabled={payoutSaving}>
+                {payoutSaving ? 'Saving...' : 'Save payout details →'}
+              </button>
+            </div>
+          </form>
+        )}
+      </section>
 
       {/* ── LISTINGS ── */}
       <section className={styles.section}>
@@ -321,6 +420,16 @@ export default function OwnerDashboard() {
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                 />
               </div>
+              <div className={styles.field} style={{ gridColumn: '1 / -1' }}>
+                <label className={styles.label}>Requirements to book (shown to renters, they must agree before paying)</label>
+                <textarea
+                  className={styles.input}
+                  rows={3}
+                  placeholder="e.g. Must be 25+, valid driver's license required, ₦20,000 refundable deposit on delivery..."
+                  value={form.requirements}
+                  onChange={(e) => setForm({ ...form, requirements: e.target.value })}
+                />
+              </div>
             </div>
 
             {uploadProgress && (
@@ -374,11 +483,16 @@ export default function OwnerDashboard() {
                   <span style={{
                     fontSize: 11,
                     fontWeight: 500,
-                    color: b.status === 'confirmed' ? 'var(--success)' : 'var(--accent)',
+                    color: b.status === 'pending' ? 'var(--accent)' : 'var(--success)',
                     textTransform: 'capitalize',
                   }}>
                     ● {b.status}
                   </span>
+                  {b.status === 'pending' && !b.requirements_agreed && (
+                    <div style={{ fontSize: 11, color: '#f07070', marginTop: 2 }}>
+                      ⚠ Renter has not confirmed the requirements
+                    </div>
+                  )}
                 </div>
                 <div className={styles.actionBtns}>
                   {b.status === 'pending' && (
@@ -400,9 +514,25 @@ export default function OwnerDashboard() {
                   {b.status === 'confirmed' && (
                     <button
                       className={styles.acceptBtn}
+                      onClick={() => handleBookingStatus(b.id, 'dispatched')}
+                    >
+                      🚚 Mark dispatched
+                    </button>
+                  )}
+                  {b.status === 'dispatched' && (
+                    <button
+                      className={styles.acceptBtn}
+                      onClick={() => handleBookingStatus(b.id, 'delivered')}
+                    >
+                      📍 Mark delivered
+                    </button>
+                  )}
+                  {b.status === 'delivered' && (
+                    <button
+                      className={styles.acceptBtn}
                       onClick={() => handleBookingStatus(b.id, 'completed')}
                     >
-                      ✓ Mark complete
+                      ✓ Mark trip complete
                     </button>
                   )}
                 </div>

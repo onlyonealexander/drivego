@@ -24,6 +24,24 @@ export default function AuthModal({ isOpen, onClose, intent }) {
 
   if (!isOpen) return null;
 
+  const handleForgotPassword = async () => {
+    if (!loginEmail) {
+      setError('Enter your email above first, then click "Forgot password?".');
+      return;
+    }
+    setError('');
+    setSuccess('');
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(loginEmail, {
+        redirectTo: window.location.origin,
+      });
+      if (resetError) throw resetError;
+      setSuccess('Password reset email sent. Check your inbox.');
+    } catch (err) {
+      setError(err.message || 'Failed to send reset email.');
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!loginEmail || !loginPass) {
@@ -54,7 +72,6 @@ export default function AuthModal({ isOpen, onClose, intent }) {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    console.log('SIGNUP ROLE:', signupRole);
     if (!name || !email || !password || !phone) {
       setError('Please fill in all required fields.');
       return;
@@ -139,7 +156,7 @@ export default function AuthModal({ isOpen, onClose, intent }) {
                 onChange={(e) => setLoginPass(e.target.value)}
               />
             </div>
-            <p className={styles.forgot}>Forgot password?</p>
+            <p className={styles.forgot} onClick={handleForgotPassword}>Forgot password?</p>
             <button type="submit" className={styles.submit} disabled={loading}>
               {loading ? 'Signing in...' : 'Sign in →'}
             </button>

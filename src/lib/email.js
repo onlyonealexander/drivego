@@ -52,8 +52,37 @@ export async function sendBookingEmailToOwner({ ownerName, ownerEmail, renterNam
   }
 }
 
+const STATUS_EMAIL_COPY = {
+  confirmed: {
+    subject:     (car) => `Your booking for ${car} is confirmed! ✅`,
+    message:     (car) => `Great news! The owner has confirmed your booking for ${car}. They're getting the car ready for you.`,
+    action_note: 'You will be notified as soon as the car is dispatched to your location.',
+  },
+  declined: {
+    subject:     (car) => `Your booking for ${car} was declined ❌`,
+    message:     (car) => `Unfortunately the owner has declined your booking for ${car}.`,
+    action_note: 'You can browse other available cars on DriveGO. Contact support if you already paid and need a refund.',
+  },
+  dispatched: {
+    subject:     (car) => `${car} is on its way 🚚`,
+    message:     (car) => `Your car, ${car}, has been dispatched and is on its way to your location.`,
+    action_note: 'Please be available to receive the car and confirm its condition.',
+  },
+  delivered: {
+    subject:     (car) => `${car} has been delivered — enjoy your trip! 🚗`,
+    message:     (car) => `${car} has been delivered to you. Enjoy your trip!`,
+    action_note: 'Please take care of the car and return it as agreed at the end of your trip.',
+  },
+  completed: {
+    subject:     (car) => `Your trip with ${car} is complete ✅`,
+    message:     (car) => `Your trip with ${car} has been marked complete. We hope you enjoyed it!`,
+    action_note: 'You can now leave a review from your dashboard.',
+  },
+};
+
 export async function sendBookingStatusEmail({ renterName, renterEmail, carName, status, startDate, endDate }) {
-  const isConfirmed = status === 'confirmed';
+  const copy = STATUS_EMAIL_COPY[status];
+  if (!copy) return;
   try {
     await emailjs.send(
       SERVICE_ID,
@@ -61,20 +90,14 @@ export async function sendBookingStatusEmail({ renterName, renterEmail, carName,
       {
         to_name:     renterName,
         to_email:    renterEmail,
-        subject:     isConfirmed
-          ? `Your booking for ${carName} is confirmed! ✅`
-          : `Your booking for ${carName} was declined ❌`,
-        message:     isConfirmed
-          ? `Great news! The owner has confirmed your booking for ${carName}.`
-          : `Unfortunately the owner has declined your booking for ${carName}.`,
+        subject:     copy.subject(carName),
+        message:     copy.message(carName),
         car_name:    carName,
         start_date:  startDate,
         end_date:    endDate,
         days:        '',
         total:       '',
-        action_note: isConfirmed
-          ? 'Please make sure to pick up the car on time. Enjoy your ride!'
-          : 'You can browse other available cars on DriveGO.',
+        action_note: copy.action_note,
       },
       PUBLIC_KEY
     );

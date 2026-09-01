@@ -14,6 +14,7 @@ export default function BookingModal({ car, onClose, onSuccess }) {
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const [agreed, setAgreed]       = useState(!car?.requirements);
 
   if (!car) return null;
 
@@ -31,6 +32,10 @@ export default function BookingModal({ car, onClose, onSuccess }) {
     }
     if (days < 1) {
       setError('Return date must be after pickup date.');
+      return;
+    }
+    if (!agreed) {
+      setError('Please confirm you have read and agree to the requirements.');
       return;
     }
     setError('');
@@ -68,8 +73,9 @@ export default function BookingModal({ car, onClose, onSuccess }) {
         start_date:  startDate.toISOString().split('T')[0],
         end_date:    endDate.toISOString().split('T')[0],
         total_price: totalPrice,
-        status:      'confirmed',
+        status:      'pending',
         payment_ref: response.reference,
+        requirements_agreed: true,
       });
       setConfirmed(true);
     } catch (err) {
@@ -91,10 +97,11 @@ export default function BookingModal({ car, onClose, onSuccess }) {
         {confirmed ? (
           <div className={styles.success}>
             <div className={styles.successIcon}>🎉</div>
-            <h2 className={styles.successTitle}>Booking Confirmed!</h2>
+            <h2 className={styles.successTitle}>Payment received!</h2>
             <p className={styles.successSub}>
-              Your payment was successful and <strong>{car.name}</strong> is booked.
-              The owner has been notified.
+              Your request for <strong>{car.name}</strong> is now pending the owner's
+              confirmation. You'll be notified as soon as they accept and again when
+              the car is dispatched to you.
             </p>
             <div className={styles.successDetails}>
               <div className={styles.detailRow}>
@@ -171,6 +178,24 @@ export default function BookingModal({ car, onClose, onSuccess }) {
               </div>
             </div>
 
+            {car.requirements && (
+              <div className={styles.breakdown} style={{ marginBottom: 16 }}>
+                <div style={{ fontWeight: 600, marginBottom: 6 }}>📋 Owner's requirements</div>
+                <p style={{ fontSize: 13, color: 'var(--text-muted)', whiteSpace: 'pre-wrap', marginBottom: 10 }}>
+                  {car.requirements}
+                </p>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 13, cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    style={{ marginTop: 2 }}
+                  />
+                  I have read and agree to these requirements
+                </label>
+              </div>
+            )}
+
             {days > 0 && (
               <div className={styles.breakdown}>
                 <div className={styles.breakdownRow}>
@@ -194,7 +219,7 @@ export default function BookingModal({ car, onClose, onSuccess }) {
             <button
               className={styles.confirmBtn}
               onClick={handlePayment}
-              disabled={loading || !startDate || !endDate}
+              disabled={loading || !startDate || !endDate || !agreed}
             >
               {loading
                 ? 'Processing...'

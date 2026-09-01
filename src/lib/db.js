@@ -157,6 +157,16 @@ export async function createBooking(bookingData) {
   return data;
 }
 
+// Booking lifecycle: pending -> confirmed -> dispatched -> delivered -> completed
+// (or pending -> declined). See supabase/schema.sql for the status check constraint.
+const STATUS_NOTIFICATION_COPY = {
+  confirmed:  { title: 'Booking confirmed! ✅',        message: (car) => `Your booking for ${car} has been confirmed. The owner is preparing your car.` },
+  declined:   { title: 'Booking declined ❌',           message: (car) => `Your booking for ${car} was declined by the owner.` },
+  dispatched: { title: 'Your car is on the way 🚚',     message: (car) => `${car} has been dispatched and is on its way to you.` },
+  delivered:  { title: 'Car delivered — enjoy! 🚗',     message: (car) => `${car} has been delivered. Enjoy your trip!` },
+  completed:  { title: 'Trip completed ✅',             message: (car) => `Your trip with ${car} is complete. We hope you enjoyed it!` },
+};
+
 export async function updateBookingStatus(bookingId, status) {
   const { data, error } = await supabase
     .from('bookings')
@@ -166,8 +176,8 @@ export async function updateBookingStatus(bookingId, status) {
     .single();
   if (error) throw error;
 
-  // If declined, make car available again
-  if (status === 'declined') {
+  // Declined or completed bookings free the car up again.
+  if (status === 'declined' || status === 'completed') {
     await supabase
       .from('cars')
       .update({ available: true })
@@ -175,27 +185,24 @@ export async function updateBookingStatus(bookingId, status) {
   }
 
   try {
-    const isConfirmed = status === 'confirmed';
+    const copy = STATUS_NOTIFICATION_COPY[status];
+    if (copy) {
+      await sendBookingStatusEmail({
+        renterName:  data.profiles?.name,
+        renterEmail: data.profiles?.email,
+        carName:     data.cars?.name,
+        status,
+        startDate:   data.start_date,
+        endDate:     data.end_date,
+      });
 
-    // Email renter
-    await sendBookingStatusEmail({
-      renterName:  data.profiles?.name,
-      renterEmail: data.profiles?.email,
-      carName:     data.cars?.name,
-      status,
-      startDate:   data.start_date,
-      endDate:     data.end_date,
-    });
-
-    // In-app notification to renter
-    await createNotification(
-      data.renter_id,
-      isConfirmed ? 'Booking confirmed! ✅' : 'Booking declined ❌',
-      isConfirmed
-        ? `Your booking for ${data.cars?.name} has been confirmed. Enjoy your ride!`
-        : `Your booking for ${data.cars?.name} was declined by the owner.`,
-      isConfirmed ? 'confirmed' : 'declined'
-    );
+      await createNotification(
+        data.renter_id,
+        copy.title,
+        copy.message(data.cars?.name || 'your car'),
+        status
+      );
+    }
   } catch (err) {
     console.error('Notification error:', err);
   }

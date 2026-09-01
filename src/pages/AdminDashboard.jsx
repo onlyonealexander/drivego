@@ -95,10 +95,12 @@ export default function AdminDashboard() {
   };
 
   const statusColor = {
-    pending:   'var(--accent)',
-    confirmed: 'var(--success)',
-    declined:  '#f07070',
-    completed: 'var(--success)',
+    pending:    'var(--accent)',
+    confirmed:  'var(--success)',
+    declined:   '#f07070',
+    dispatched: 'var(--success)',
+    delivered:  'var(--success)',
+    completed:  'var(--success)',
   };
 
   const timeAgo = (date) => {

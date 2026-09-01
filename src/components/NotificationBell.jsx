@@ -93,10 +93,13 @@ const channel = supabase
   };
 
   const typeIcon = {
-    booking:   '🚗',
-    confirmed: '✅',
-    declined:  '❌',
-    info:      'ℹ️',
+    booking:    '🚗',
+    confirmed:  '✅',
+    declined:   '❌',
+    dispatched: '🚚',
+    delivered:  '📍',
+    completed:  '🏁',
+    info:       'ℹ️',
   };
 
   const timeAgo = (date) => {

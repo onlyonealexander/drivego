@@ -85,30 +85,32 @@ export default function HomePage() {
 
         {/* Hero */}
         <section className={styles.hero}>
-          <div className={styles.tag}>🇳🇬 Available across Nigeria</div>
-          <h1 className={styles.headline}>
-            Rent a car,<br /><em>your way.</em>
-          </h1>
-          <p className={styles.heroSub}>
-            Browse owner-listed vehicles and book instantly.
-            Car owners earn while they're away.
-          </p>
-          {!user && (
-            <div className={styles.heroCtas}>
-              <button
-                className={styles.ctaPrimary}
-                onClick={() => { setModalIntent('signin'); setModalOpen(true); }}
-              >
-                Get started free →
-              </button>
-              <button
-                className={styles.ctaGhost}
-                onClick={() => { setModalIntent('list'); setModalOpen(true); }}
-              >
-                List your car
-              </button>
-            </div>
-          )}
+          <div className={styles.heroInner}>
+            <div className={styles.tag}>🇳🇬 Available across Nigeria</div>
+            <h1 className={styles.headline}>
+              Rent a car,<br /><em>your way.</em>
+            </h1>
+            <p className={styles.heroSub}>
+              Browse owner-listed vehicles and book instantly.
+              Car owners earn while they're away.
+            </p>
+            {!user && (
+              <div className={styles.heroCtas}>
+                <button
+                  className={styles.ctaPrimary}
+                  onClick={() => { setModalIntent('signin'); setModalOpen(true); }}
+                >
+                  Get started free →
+                </button>
+                <button
+                  className={styles.ctaGhost}
+                  onClick={() => { setModalIntent('list'); setModalOpen(true); }}
+                >
+                  List your car
+                </button>
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Stats row */}
@@ -130,6 +132,27 @@ export default function HomePage() {
             <div className={styles.statDesc}>Average rating</div>
           </div>
         </div>
+
+        {/* How it works */}
+        <section className={styles.howItWorks}>
+          <h2 className={styles.howItWorksTitle}>How DriveGO works</h2>
+          <div className={styles.stepsGrid}>
+            {[
+              { n: 1, title: 'Browse & pick a car',  desc: 'Search by brand, type or city and open a listing you like.' },
+              { n: 2, title: 'Review requirements',  desc: 'Read the owner\'s requirements (license, deposit, etc.) and agree to them.' },
+              { n: 3, title: 'Pay to request',        desc: 'Pick your dates and pay securely with Paystack to send your request.' },
+              { n: 4, title: 'Owner confirms',        desc: 'The owner is notified instantly and accepts or declines your request.' },
+              { n: 5, title: 'Dispatch & delivery',   desc: 'Once accepted, the owner dispatches the car to your location and marks it delivered.' },
+              { n: 6, title: 'Drive & review',        desc: 'Enjoy your trip, then leave a review once it\'s marked complete.' },
+            ].map((s) => (
+              <div key={s.n} className={styles.step}>
+                <div className={styles.stepNum}>{s.n}</div>
+                <div className={styles.stepTitle}>{s.title}</div>
+                <div className={styles.stepDesc}>{s.desc}</div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Filter Bar */}
         <section className={styles.filterBar}>

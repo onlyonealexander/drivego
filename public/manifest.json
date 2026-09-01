@@ -1,0 +1,13 @@
+{
+  "short_name": "DriveGO",
+  "name": "DriveGO — Car Rental",
+  "icons": [
+    { "src": "favicon.png", "sizes": "64x64", "type": "image/png" },
+    { "src": "logo192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "logo512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#e85d26",
+  "background_color": "#ffffff"
+}

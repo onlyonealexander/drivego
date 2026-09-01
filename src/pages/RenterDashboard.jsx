@@ -31,17 +31,50 @@ export default function RenterDashboard() {
   const pending    = bookings.filter((b) => b.status === 'pending');
 
   const statusStyle = {
-    confirmed: styles.confirmed,
-    pending:   styles.pending,
-    declined:  styles.declined,
-    completed: styles.completed,
+    confirmed:  styles.confirmed,
+    pending:    styles.pending,
+    declined:   styles.declined,
+    dispatched: styles.confirmed,
+    delivered:  styles.confirmed,
+    completed:  styles.completed,
   };
 
   const statusLabel = {
-    confirmed: '✓ Confirmed',
-    pending:   '⏳ Pending',
-    declined:  '✕ Declined',
-    completed: '✓ Completed',
+    confirmed:  '✓ Accepted',
+    pending:    '⏳ Pending owner review',
+    declined:   '✕ Declined',
+    dispatched: '🚚 Car dispatched',
+    delivered:  '📍 Delivered',
+    completed:  '✓ Completed',
+  };
+
+  const TRACKER_STAGES = ['pending', 'confirmed', 'dispatched', 'delivered', 'completed'];
+  const TRACKER_LABELS = { pending: 'Requested', confirmed: 'Accepted', dispatched: 'Dispatched', delivered: 'Delivered', completed: 'Completed' };
+
+  const StageTracker = ({ status }) => {
+    if (status === 'declined') return null;
+    const currentIdx = TRACKER_STAGES.indexOf(status);
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 8 }}>
+        {TRACKER_STAGES.map((stage, i) => (
+          <div key={stage} style={{ display: 'flex', alignItems: 'center', flex: i < TRACKER_STAGES.length - 1 ? 1 : 'none' }}>
+            <div
+              title={TRACKER_LABELS[stage]}
+              style={{
+                width: 10, height: 10, borderRadius: '50%', flexShrink: 0,
+                background: i <= currentIdx ? 'var(--success)' : 'var(--border-default)',
+              }}
+            />
+            {i < TRACKER_STAGES.length - 1 && (
+              <div style={{
+                flex: 1, height: 2, margin: '0 2px',
+                background: i < currentIdx ? 'var(--success)' : 'var(--border-default)',
+              }} />
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -97,6 +130,9 @@ export default function RenterDashboard() {
                       </div>
                       <div className={styles.bookingPrice}>
                         ₦{Number(b.total_price).toLocaleString()}
+                      </div>
+                      <div style={{ width: 180 }}>
+                        <StageTracker status={b.status} />
                       </div>
                     </div>
                   </div>
